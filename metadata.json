@@ -1,0 +1,6 @@
+{
+  "name": "Aesthetic Cozy QR Cafe Menu",
+  "description": "An adorable, elegant table-side QR menu and guest journal for a boutique cafe, featuring a gorgeous pastel blush and matcha palette, interactive bakes & lattes, authentic Himalayan tea lore, and real-time review chronicles.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

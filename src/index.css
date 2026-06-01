@@ -1,0 +1,97 @@
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&family=JetBrains+Mono:wght@400;500&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-serif: "Playfair Display", Georgia, serif;
+  --font-display: "Cinzel", serif;
+  --font-mono: "JetBrains Mono", monospace;
+}
+
+body {
+  background-color: #F2EBD9; /* Page background */
+  color: #1B2820; /* Primary dark / text */
+  font-family: var(--font-sans);
+}
+
+/* Luxury textured handcrafted deckle premium paper */
+.bg-cloud-dots {
+  background-image: radial-gradient(#C8DFC0 1.1px, transparent 1.1px);
+  background-size: 24px 24px;
+}
+
+.cafe-paper {
+  background-color: #FDFAF4;
+  background-image: 
+    radial-gradient(#D5E8CE 0.8px, transparent 0.8px), 
+    radial-gradient(#D5E8CE 0.8px, #FDFAF4 1px);
+  background-size: 20px 20px;
+  background-position: 0 0, 10px 10px;
+}
+
+/* Washi gold foil tape styling */
+.tape-strip {
+  background: linear-gradient(90deg, rgba(196, 146, 74, 0.15) 0%, rgba(196, 146, 74, 0.25) 50%, rgba(196, 146, 74, 0.15) 100%);
+  backdrop-filter: blur(8px);
+  border-left: 1px dashed rgba(196, 146, 74, 0.3);
+  border-right: 1px dashed rgba(196, 146, 74, 0.3);
+  transform: rotate(-1.5deg);
+  box-shadow: 0 2px 8px rgba(196, 146, 74, 0.05);
+}
+
+/* Premium vintage soft transitions & shadows */
+.shadow-scrapbook {
+  box-shadow: 0 10px 30px -10px rgba(27, 40, 32, 0.06), 0 1px 3px rgba(27, 40, 32, 0.02);
+}
+.shadow-polaroid {
+  box-shadow: 0 20px 50px -15px rgba(27, 40, 32, 0.12);
+}
+
+/* Elegant gold trim border card designs */
+.gold-trim {
+  border: 1px solid rgba(168, 197, 160, 0.25);
+  position: relative;
+}
+.gold-trim::after {
+  content: '';
+  position: absolute;
+  inset: 3px;
+  border: 1px solid rgba(168, 197, 160, 0.12);
+  pointer-events: none;
+  border-radius: inherit;
+}
+
+/* Custom premium gold scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #F2EBD9;
+}
+::-webkit-scrollbar-thumb {
+  background: #C4924A;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #A8C5A0;
+}
+
+/* Real page flips / lifts */
+.bouncy-hover {
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.bouncy-hover:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 25px 60px -20px rgba(30, 27, 24, 0.15);
+}
+
+/* Fortune Cookie crack shivers */
+@keyframes shakeCookie {
+  0%, 100% { transform: scale(1); }
+  25% { transform: scale(1.04) rotate(-3deg); }
+  75% { transform: scale(1.04) rotate(3deg); }
+}
+.cookie-hover-shake:hover {
+  animation: shakeCookie 0.8s infinite ease-in-out;
+}

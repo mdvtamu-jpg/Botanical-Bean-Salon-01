@@ -1,0 +1,113 @@
+{
+  "entities": {
+    "DishStats": {
+      "title": "Dish Stats",
+      "description": "Public statistics for a dish",
+      "type": "object",
+      "properties": {
+        "likesCount": {
+          "type": "number"
+        }
+      },
+      "required": ["likesCount"]
+    },
+    "Comment": {
+      "title": "Comment",
+      "description": "User review or comment for a dish",
+      "type": "object",
+      "properties": {
+        "text": {
+          "type": "string"
+        },
+        "authorName": {
+          "type": "string"
+        },
+        "createdAt": {
+          "type": "number",
+          "description": "Server timestamp"
+        }
+      },
+      "required": ["text", "authorName", "createdAt"]
+    },
+    "CafeMemory": {
+      "title": "Cafe Memory",
+      "description": "Guest memory photo & caption shared by a customer on the Polaroids Wall",
+      "type": "object",
+      "properties": {
+        "guestName": {
+          "type": "string"
+        },
+        "caption": {
+          "type": "string"
+        },
+        "imageUrl": {
+          "type": "string"
+        },
+        "createdAt": {
+          "type": "number",
+          "description": "Server timestamp"
+        }
+      },
+      "required": ["guestName", "caption", "imageUrl", "createdAt"]
+    },
+    "RestaurantConfig": {
+      "title": "Restaurant Config",
+      "description": "General settings for the restaurant managed by admin",
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "instagramLink": {
+          "type": "string"
+        },
+        "logoUrl": {
+          "type": "string"
+        }
+      },
+      "required": ["name", "instagramLink", "logoUrl"]
+    },
+    "MenuItemEntity": {
+      "title": "Menu Item",
+      "description": "Customizable items for the digital menu",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "category": { "type": "string" },
+        "price": { "type": "number" },
+        "description": { "type": "string" },
+        "whyLoved": { "type": "string" },
+        "fact": { "type": "string" },
+        "ingredients": { "type": "array" },
+        "image": { "type": "string" },
+        "rating": { "type": "number" },
+        "reviewCount": { "type": "number" },
+        "dietary": { "type": "array" }
+      },
+      "required": ["id", "name", "category", "price", "description", "whyLoved", "fact", "ingredients", "image", "rating", "reviewCount", "dietary"]
+    }
+  },
+  "firestore": {
+    "/dish_stats/{dishId}": {
+      "schema": { "$ref": "#/entities/DishStats" },
+      "description": "Stores the aggregated likes and review data for a dish."
+    },
+    "/dishes/{dishId}/comments/{commentId}": {
+      "schema": { "$ref": "#/entities/Comment" },
+      "description": "Stores individual comments/reviews for a specific dish."
+    },
+    "/cafe_memories/{memoryId}": {
+      "schema": { "$ref": "#/entities/CafeMemory" },
+      "description": "Stores social guest memories pinned to the cafe parlor wall."
+    },
+    "/restaurant_config/{configId}": {
+      "schema": { "$ref": "#/entities/RestaurantConfig" },
+      "description": "Stores site identity config: logo, name, insta link."
+    },
+    "/menu_items/{itemId}": {
+      "schema": { "$ref": "#/entities/MenuItemEntity" },
+      "description": "Stores editable list of delicacies."
+    }
+  }
+}

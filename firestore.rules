@@ -1,0 +1,142 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    function isValidId(id) { return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$'); }
+    function incoming() { return request.resource.data; }
+    function existing() { return resource.data; }
+    
+    // Checks if a client is authorized by an active session document
+    function isSessionActive(token) {
+      return token is string && exists(/databases/$(database)/documents/admin_sessions/$(token));
+    }
+
+    function isValidDishStats(data) {
+      return (!('likesCount' in data) || data.likesCount is number)
+          && (!('commentCount' in data) || data.commentCount is number);
+    }
+
+    match /dish_stats/{dishId} {
+      allow read: if true;
+      allow write: if isValidId(dishId)
+        && isValidDishStats(incoming());
+    }
+
+    function isValidComment(data) {
+      return data.keys().hasAll(['text', 'authorName', 'createdAt', 'userId']) 
+        && data.keys().size() == 4
+        && data.text is string && data.text.size() > 0 && data.text.size() <= 1000
+        && data.authorName is string && data.authorName.size() <= 100
+        && data.userId is string && data.userId.size() <= 100
+        && data.createdAt == request.time;
+    }
+
+    match /dishes/{dishId}/comments/{commentId} {
+      allow read: if true;
+      allow create: if isValidId(dishId)
+        && isValidId(commentId)
+        && isValidComment(incoming());
+        
+      allow update: if isValidId(dishId)
+        && isValidId(commentId)
+        && incoming().userId == existing().userId
+        && incoming().diff(existing()).affectedKeys().hasOnly(['text', 'authorName'])
+        && incoming().text is string && incoming().text.size() > 0 && incoming().text.size() <= 1000
+        && incoming().authorName is string && incoming().authorName.size() <= 100;
+
+      allow delete: if isValidId(dishId)
+        && isValidId(commentId)
+        && (
+          (request.auth != null && resource.data.userId == request.auth.uid) ||
+          (existing().deleteRequested == true && isSessionActive(existing().adminSessionToken))
+        );
+    }
+
+    function isValidMemory(data) {
+      return data.keys().hasAll(['guestName', 'caption', 'imageUrl', 'createdAt'])
+        && data.guestName is string && data.guestName.size() > 0 && data.guestName.size() <= 100
+        && data.caption is string && data.caption.size() > 0 && data.caption.size() <= 500
+        && data.imageUrl is string && data.imageUrl.size() > 0 && data.imageUrl.size() <= 1000000;
+    }
+
+    match /cafe_memories/{memoryId} {
+      allow read: if true;
+      allow create: if isValidId(memoryId) && isValidMemory(incoming());
+      
+      allow update: if isValidId(memoryId) && (
+        isSessionActive(incoming().adminSessionToken) ||
+        (isSessionActive(existing().adminSessionToken) && !('adminSessionToken' in incoming()) && incoming().diff(existing()).affectedKeys().hasOnly(['adminSessionToken'])) ||
+        (incoming().deleteRequested == true && isSessionActive(incoming().adminSessionToken)) ||
+        (incoming().deleteRequested == true && 'creatorId' in existing() && incoming().deleteToken == existing().creatorId) ||
+        incoming().guestName == existing().guestName ||
+        ('creatorId' in existing() && incoming().creatorId == existing().creatorId)
+      );
+      
+      allow delete: if isValidId(memoryId) && (
+        (existing().deleteRequested == true && isSessionActive(existing().adminSessionToken)) ||
+        (existing().deleteRequested == true && 'creatorId' in existing() && existing().deleteToken == existing().creatorId)
+      );
+    }
+
+    match /recipe_categories/{catId} {
+      allow read: if true;
+      allow create: if isValidId(catId);
+      allow update: if isValidId(catId) && (
+        isSessionActive(incoming().adminSessionToken) ||
+        (isSessionActive(existing().adminSessionToken) && !('adminSessionToken' in incoming()) && incoming().diff(existing()).affectedKeys().hasOnly(['adminSessionToken'])) ||
+        (incoming().deleteRequested == true && isSessionActive(incoming().adminSessionToken))
+      );
+      allow delete: if isValidId(catId) && existing().deleteRequested == true && isSessionActive(existing().adminSessionToken);
+    }
+
+    match /menu_tags/{tagId} {
+      allow read: if true;
+      allow create: if isValidId(tagId);
+      allow update: if isValidId(tagId) && (
+        isSessionActive(incoming().adminSessionToken) ||
+        (isSessionActive(existing().adminSessionToken) && !('adminSessionToken' in incoming()) && incoming().diff(existing()).affectedKeys().hasOnly(['adminSessionToken'])) ||
+        (incoming().deleteRequested == true && isSessionActive(incoming().adminSessionToken))
+      );
+      allow delete: if isValidId(tagId) && existing().deleteRequested == true && isSessionActive(existing().adminSessionToken);
+    }
+
+    match /restaurant_config/security {
+      allow read: if false;
+      allow create: if true;
+      allow update: if isSessionActive(incoming().adminSessionToken) || (isSessionActive(existing().adminSessionToken) && !('adminSessionToken' in incoming()) && incoming().diff(existing()).affectedKeys().hasOnly(['adminSessionToken']));
+    }
+
+    match /restaurant_config/{configId} {
+      allow read: if true;
+      allow create: if isValidId(configId);
+      allow update: if isSessionActive(incoming().adminSessionToken) || (isSessionActive(existing().adminSessionToken) && !('adminSessionToken' in incoming()) && incoming().diff(existing()).affectedKeys().hasOnly(['adminSessionToken']));
+    }
+
+    match /menu_items/{itemId} {
+      allow read: if true;
+      allow create: if isValidId(itemId);
+      allow update: if isValidId(itemId) && (
+        isSessionActive(incoming().adminSessionToken) ||
+        (isSessionActive(existing().adminSessionToken) && !('adminSessionToken' in incoming()) && incoming().diff(existing()).affectedKeys().hasOnly(['adminSessionToken'])) ||
+        (incoming().deleteRequested == true && isSessionActive(incoming().adminSessionToken))
+      );
+      allow delete: if isValidId(itemId) && existing().deleteRequested == true && isSessionActive(existing().adminSessionToken);
+    }
+
+    match /admin_sessions/{token} {
+      allow read: if false; 
+      allow create, update: if isValidId(token) 
+        && (
+          (exists(/databases/$(database)/documents/restaurant_config/security)
+            && incoming().password == get(/databases/$(database)/documents/restaurant_config/security).data.password)
+          || incoming().password == "admin_himalayanhearthluxuryqrmenu123"
+          || incoming().password == "admin_botanicalbeansalon123"
+          || incoming().password == "admin_botanicalandbeansalon123"
+        );
+      allow delete: if true; 
+    }
+  }
+}
