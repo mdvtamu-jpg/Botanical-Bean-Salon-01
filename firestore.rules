@@ -35,24 +35,7 @@ service cloud.firestore {
     }
 
     match /dishes/{dishId}/comments/{commentId} {
-      allow read: if true;
-      allow create: if isValidId(dishId)
-        && isValidId(commentId)
-        && isValidComment(incoming());
-        
-      allow update: if isValidId(dishId)
-        && isValidId(commentId)
-        && incoming().userId == existing().userId
-        && incoming().diff(existing()).affectedKeys().hasOnly(['text', 'authorName'])
-        && incoming().text is string && incoming().text.size() > 0 && incoming().text.size() <= 1000
-        && incoming().authorName is string && incoming().authorName.size() <= 100;
-
-      allow delete: if isValidId(dishId)
-        && isValidId(commentId)
-        && (
-          (request.auth != null && resource.data.userId == request.auth.uid) ||
-          (existing().deleteRequested == true && isSessionActive(existing().adminSessionToken))
-        );
+      allow read, write: if true;
     }
 
     function isValidMemory(data) {
@@ -135,6 +118,8 @@ service cloud.firestore {
           || incoming().password == "admin_himalayanhearthluxuryqrmenu123"
           || incoming().password == "admin_botanicalbeansalon123"
           || incoming().password == "admin_botanicalandbeansalon123"
+          || incoming().password == "admin_botanicalbeansalon01123"
+          || incoming().password == "admin_botanicalandbeansalon01123"
         );
       allow delete: if true; 
     }

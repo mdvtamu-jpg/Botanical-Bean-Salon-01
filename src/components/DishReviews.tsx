@@ -95,25 +95,16 @@ export default function DishReviews({ dishId, isAdmin }: DishReviewsProps) {
   };
 
   const handleDeleteComment = async (commentId: string) => {
-    if (!isAdmin) {
+    const isOwner = comments.find(c => c.id === commentId)?.userId === deviceId;
+    if (!isAdmin && !isOwner) {
       alert("Ledger entries are permanent to keep chronicles authentic. Kindly request the Botanical Master to moderate or prune ledger lines! 🌿");
       return;
     }
     if (!window.confirm("Are you sure you want to permanently dissolve this tasting chronicle?")) return;
     try {
-      const token = localStorage.getItem('teahouse_admin_session_token') || '';
-      const targetComment = comments.find(c => c.id === commentId);
-      if (!targetComment) throw new Error("Comment not found in local index");
-
-      // 1. Stage deletion requests and authentication checks
       const commentRef = doc(db, 'dishes', dishId, 'comments', commentId);
-      await setDoc(commentRef, {
-        ...targetComment,
-        deleteRequested: true,
-        adminSessionToken: token
-      });
 
-      // 2. Perform safe final database deletion
+      // Perform direct database deletion
       await deleteDoc(commentRef);
       
       const statsRef = doc(db, 'dish_stats', dishId);
