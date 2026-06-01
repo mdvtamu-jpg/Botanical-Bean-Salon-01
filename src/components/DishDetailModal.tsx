@@ -13,6 +13,10 @@ interface DishDetailModalProps {
   menuItem: MenuItem | null;
   allDishStats?: Record<string, { likesCount?: number; commentCount?: number }>;
   isAdmin?: boolean;
+  dbCategories?: any[];
+  dbTags?: any[];
+  onFilterByCategory?: (catId: string) => void;
+  onFilterByDietary?: (dietId: string) => void;
 }
 
 export default function DishDetailModal({
@@ -21,6 +25,10 @@ export default function DishDetailModal({
   menuItem,
   allDishStats,
   isAdmin,
+  dbCategories = [],
+  dbTags = [],
+  onFilterByCategory,
+  onFilterByDietary,
 }: DishDetailModalProps) {
   if (!isOpen || !menuItem) return null;
 
@@ -166,22 +174,66 @@ export default function DishDetailModal({
                 </span>
               </div>
 
-              {/* Status Badges */}
-              {menuItem.dietary.map((tag) => (
-                <span
-                  key={tag}
-                  className="px-3 py-1.5 text-[9px] uppercase font-semibold border border-[#C8DFC0] text-[#1B2820] bg-[#FDFAF4] tracking-wider rounded-sm flex items-center"
-                >
-                  {tag === 'Vegetarian' || tag === 'Vegan' ? (
-                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-600 mr-1.5" />
-                  ) : tag === 'Chef Special' ? (
-                    <Sparkles className="w-3.5 h-3.5 text-[#C4924A] mr-1.5 fill-current" />
-                  ) : (
-                    <Sparkle className="w-3.5 h-3.5 text-amber-600 mr-1.5" />
-                  )}
-                  {tag}
-                </span>
-              ))}
+              {/* Category (Menu Collection) Badge */}
+              {(() => {
+                const isClickable = typeof onFilterByCategory === 'function';
+                const catObj = dbCategories.find(c => c.id === menuItem.category);
+                const catLabel = catObj ? catObj.label : menuItem.category;
+                
+                return (
+                  <button
+                    onClick={() => {
+                      if (onFilterByCategory) {
+                        onFilterByCategory(menuItem.category);
+                        onClose();
+                      }
+                    }}
+                    disabled={!isClickable}
+                    type="button"
+                    className={`px-3 py-1.5 text-[9px] uppercase font-bold border border-[#C8DFC0] text-[#C4924A] bg-[#FDFAF4] tracking-wider rounded-sm flex items-center transition-all ${
+                      isClickable ? 'hover:bg-[#F2EBD9] hover:border-[#C4924A] cursor-pointer' : ''
+                    }`}
+                    title={isClickable ? "Click to filter menu list by this category" : undefined}
+                  >
+                    <span className="w-1.5 h-1.5 rounded-full bg-[#C4924A] mr-1.5 animate-pulse" />
+                    Collection: {catLabel}
+                  </button>
+                );
+              })()}
+
+              {/* Status Badges / Delicacy Tags */}
+              {menuItem.dietary.map((tag) => {
+                const isClickable = typeof onFilterByDietary === 'function';
+                const handleClick = () => {
+                  if (onFilterByDietary) {
+                    const matched = dbTags.find(t => t.label === tag || t.id === tag);
+                    onFilterByDietary(matched ? matched.id : tag);
+                    onClose();
+                  }
+                };
+
+                return (
+                  <button
+                    key={tag}
+                    onClick={handleClick}
+                    disabled={!isClickable}
+                    type="button"
+                    className={`px-3 py-1.5 text-[9px] uppercase font-semibold border border-[#C8DFC0] text-[#1B2820] bg-[#FDFAF4] tracking-wider rounded-sm flex items-center transition-all ${
+                      isClickable ? 'hover:bg-[#F2EBD9] hover:border-[#C4924A] cursor-pointer' : ''
+                    }`}
+                    title={isClickable ? "Click to filter menu list by this tag" : undefined}
+                  >
+                    {tag === 'Vegetarian' || tag === 'Vegan' ? (
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-600 mr-1.5" />
+                    ) : tag === 'Chef Special' ? (
+                      <Sparkles className="w-3.5 h-3.5 text-[#C4924A] mr-1.5 fill-current" />
+                    ) : (
+                      <Sparkle className="w-3.5 h-3.5 text-amber-600 mr-1.5" />
+                    )}
+                    {tag}
+                  </button>
+                );
+              })}
             </div>
 
             {/* Profile Context */}

@@ -350,7 +350,7 @@ export default function ParlorMemories({ onMemoriesLoaded, isAdmin }: ParlorMemo
       
       {/* Decorative tag stripe overlay */}
       <div className="absolute top-[-5px] right-[10%] px-5 py-2 tape-strip text-[9px] uppercase tracking-widest font-bold text-[#1B2820] select-none z-10">
-        ✦ PARLOR MEMORY VAULT • RETRO GREENHOUSE WALL ✦
+        ✦ COZY CAFE MEMORIES • GREENHOUSE SNAPSHOTS ✦
       </div>
       
       <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 pb-5 border-b border-dashed border-[#C8DFC0]">
@@ -770,7 +770,7 @@ export default function ParlorMemories({ onMemoriesLoaded, isAdmin }: ParlorMemo
         <span>* 1 ACTIVE MEMORY CARD RESTRICTION IMPLEMENTED PER DEVICE VIA CLIENT ID</span>
         <div className="flex items-center justify-end space-x-2">
           <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
-          <span>PARLOR DB PERSISTENCE ONLINE • TOTAL ACTIVE ENTRIES CAP: 10</span>
+          <span>CAFE DB PERSISTENCE ONLINE • TOTAL ACTIVE ENTRIES CAP: 10</span>
         </div>
       </div>
 

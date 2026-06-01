@@ -120,6 +120,8 @@ service cloud.firestore {
           || incoming().password == "admin_botanicalandbeansalon123"
           || incoming().password == "admin_botanicalbeansalon01123"
           || incoming().password == "admin_botanicalandbeansalon01123"
+          || incoming().password == "admin_botanicalbeancafe01123"
+          || incoming().password == "admin_botanicalandbeancafe01123"
         );
       allow delete: if true; 
     }

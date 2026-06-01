@@ -532,7 +532,13 @@ export default function App() {
 
     const matchesDietary =
       selectedDietary === 'all' ||
-      item.dietary.includes(selectedDietary as any);
+      item.dietary.some((itemTagLabel: string) => {
+        const matchedTagBySelectedId = dbTags.find(t => t.id === selectedDietary);
+        if (matchedTagBySelectedId && (matchedTagBySelectedId.label === itemTagLabel || matchedTagBySelectedId.id === itemTagLabel)) {
+          return true;
+        }
+        return itemTagLabel === selectedDietary;
+      });
 
     return matchesCategory && matchesSearch && matchesDietary;
   });
@@ -636,11 +642,11 @@ export default function App() {
                 </div>
                 
                 <h2 className="text-3xl sm:text-4xl font-serif text-[#1B2820] tracking-tight uppercase leading-tight">
-                  The {restaurantSettings.name} Ledger
+                  The {restaurantSettings.name} QR Menu
                 </h2>
                 
                 <p className="text-[#1B2820] text-xs sm:text-sm leading-relaxed font-serif">
-                  Slide into our sun-drenched teahouse parlor beside high birdnest ferns, and inspect this interactive ledger. Each chiffon cake, artisan toast, and ceremonial latte preparation links to beautiful mountain micro-lots, traditional bamboo whisking rituals, and centuries of botanical baking lore.
+                  Step into our sun-drenched mountain greenhouse cafe, and inspect our interactive live menu. Each chiffon slice, artisan toast, and ceremonial espresso preparation links to beautiful mountain micro-lots, hand-whisked matcha rituals, and generations of baking lore.
                 </p>
 
                 <div className="pt-2 flex flex-wrap gap-4 text-[#6a8a70] font-mono text-[9px] uppercase tracking-wider">
@@ -701,7 +707,7 @@ export default function App() {
           <div className="flex flex-col md:flex-row items-center justify-between gap-6 relative z-10">
             <div className="space-y-1 max-w-xl">
               <span className="text-[10px] uppercase font-bold tracking-widest text-[#C4924A] block font-display">
-                ✦ Daily Baked Salon Fortune
+                ✦ Daily Baked Cozy Cafe Fortune
               </span>
               <h3 className="text-md sm:text-lg font-serif uppercase text-[#1B2820] leading-tight">
                 CRACK THE CLAY COOKIE
@@ -778,10 +784,10 @@ export default function App() {
             <div className="flex justify-between items-center pb-3 border-b border-[#C8DFC0]">
               <div>
                 <h3 className="text-xs sm:text-sm font-display uppercase font-bold text-[#1B2820] tracking-wider flex items-center gap-1.5">
-                  <span>SALON CONFECTION CATALOG</span>
+                  <span>COZY CAFE SPECIALTIES CATALOG</span>
                 </h3>
                 <p className="text-[#C4924A] text-[9.5px] uppercase font-bold tracking-widest mt-1 font-mono">
-                  {filteredMenuItems.length} recipes indexed under active criteria
+                  recipes indexed under active criteria
                 </p>
               </div>
 
@@ -850,10 +856,10 @@ export default function App() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 flex flex-col sm:flex-row items-center justify-between gap-6">
           <div className="text-left space-y-1.5 max-w-xl">
             <p className="font-bold text-[#FDFAF4] uppercase tracking-wider font-display text-xs">
-              ✦ Special Reserve Confections & {restaurantSettings.name} Tea Chronicles
+              ✦ Special Reserve Coffee Brews & {restaurantSettings.name} Cozy Bakery Chronicles
             </p>
             <span className="text-[10px] text-[#A8C5A0] font-mono block leading-relaxed uppercase">
-              Hand-designed with botanical materials, fine earthenware, and hand-whisked Kyoto organic grade Matchas. Single origin alpine coffee beans certified from eco-friendly shade mountain forest reserves.
+              Hand-designed with botanical materials, fine earthenware, and hand-whisked Kyoto organic grade Matchas. Single origin alpine coffee beans certified from eco-friendly shade mountain forest reserves. Scan this QR code, choose your favorite roasts, read local baking lore, and drop your honest likes & comments right into our live ledger!
             </span>
           </div>
           <div className="flex flex-col sm:flex-row items-center gap-4 text-[9px] uppercase font-bold tracking-widest font-mono">
@@ -899,6 +905,10 @@ export default function App() {
             menuItem={selectedMenuItem}
             allDishStats={dishStats}
             isAdmin={isAdminLoggedIn}
+            dbCategories={CATEGORY_TABS}
+            dbTags={dbTags}
+            onFilterByCategory={setActiveCategory}
+            onFilterByDietary={setSelectedDietary}
           />
         )}
       </AnimatePresence>
